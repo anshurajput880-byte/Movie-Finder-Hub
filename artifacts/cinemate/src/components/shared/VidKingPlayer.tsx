@@ -17,7 +17,6 @@ export function VidKingPlayer({ mediaType, tmdbId, seasonNumber, episodeNumber }
         className="absolute inset-0 w-full h-full border-0"
         allowFullScreen
         allow="autoplay; encrypted-media; fullscreen"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock"
         referrerPolicy="no-referrer"
       />
     </div>
