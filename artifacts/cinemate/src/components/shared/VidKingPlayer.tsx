@@ -9,6 +9,13 @@ interface VidKingPlayerProps {
 
 const SOURCES = [
   {
+    name: "VidKing",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
+      type === "movie"
+        ? `https://vidking.net/embed/movie/${id}`
+        : `https://vidking.net/embed/tv/${id}/${s}/${e}`,
+  },
+  {
     name: "VidSrc Pro",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
@@ -28,20 +35,6 @@ const SOURCES = [
       type === "movie"
         ? `https://ezvidapi.com/embed/movie/${id}`
         : `https://ezvidapi.com/embed/tv/${id}/${s}/${e}`,
-  },
-  {
-    name: "SuperEmbed",
-    getUrl: (type: string, id: number, s?: number, e?: number) =>
-      type === "movie"
-        ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
-        : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
-  },
-  {
-    name: "VidSrc Dev",
-    getUrl: (type: string, id: number, s?: number, e?: number) =>
-      type === "movie"
-        ? `https://vidsrc.dev/embed/movie/${id}`
-        : `https://vidsrc.dev/embed/tv/${id}?season=${s}&episode=${e}`,
   },
 ];
 
