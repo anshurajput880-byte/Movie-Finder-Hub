@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: movies
+    description: Movie and TV operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,239 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /movies/search:
+    get:
+      operationId: searchMovies
+      tags: [movies]
+      summary: Search movies and TV shows
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: mediaType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [movie, tv, all]
+            default: all
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /movies/trending:
+    get:
+      operationId: getTrending
+      tags: [movies]
+      summary: Get trending movies and TV shows
+      parameters:
+        - name: mediaType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [movie, tv, all]
+            default: all
+        - name: timeWindow
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [day, week]
+            default: week
+      responses:
+        "200":
+          description: Trending results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /movies/popular:
+    get:
+      operationId: getPopular
+      tags: [movies]
+      summary: Get popular movies
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Popular movies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /movies/popular-tv:
+    get:
+      operationId: getPopularTv
+      tags: [movies]
+      summary: Get popular TV shows
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Popular TV shows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /movies/top-rated:
+    get:
+      operationId: getTopRated
+      tags: [movies]
+      summary: Get top rated movies
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Top rated movies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /movies/genres:
+    get:
+      operationId: getGenres
+      tags: [movies]
+      summary: Get all genres
+      responses:
+        "200":
+          description: List of genres
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenreList"
+
+  /media/{mediaType}/{mediaId}:
+    get:
+      operationId: getMediaDetails
+      tags: [movies]
+      summary: Get movie or TV show details
+      parameters:
+        - name: mediaType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [movie, tv]
+        - name: mediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Movie/TV details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaDetails"
+
+  /media/{mediaType}/{mediaId}/similar:
+    get:
+      operationId: getMediaSimilar
+      tags: [movies]
+      summary: Get similar movies or TV shows
+      parameters:
+        - name: mediaType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [movie, tv]
+        - name: mediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Similar results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /media/{mediaType}/{mediaId}/credits:
+    get:
+      operationId: getMediaCredits
+      tags: [movies]
+      summary: Get movie or TV show cast/crew
+      parameters:
+        - name: mediaType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [movie, tv]
+        - name: mediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cast and crew
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Credits"
+
+  /media/tv/{mediaId}/seasons/{seasonNumber}:
+    get:
+      operationId: getSeasonDetails
+      tags: [movies]
+      summary: Get TV season details and episodes
+      parameters:
+        - name: mediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: seasonNumber
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Season details with episodes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeasonDetails"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +269,225 @@ components:
       required:
         - status
 
+    MediaItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        name:
+          type: string
+        overview:
+          type: string
+        poster_path:
+          type: ["string", "null"]
+        backdrop_path:
+          type: ["string", "null"]
+        vote_average:
+          type: number
+        vote_count:
+          type: integer
+        release_date:
+          type: string
+        first_air_date:
+          type: string
+        media_type:
+          type: string
+        genre_ids:
+          type: array
+          items:
+            type: integer
+        popularity:
+          type: number
+      required:
+        - id
+
+    SearchResults:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/MediaItem"
+        total_results:
+          type: integer
+        total_pages:
+          type: integer
+        page:
+          type: integer
+      required:
+        - results
+        - total_results
+        - total_pages
+        - page
+
+    Genre:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+        - id
+        - name
+
+    GenreList:
+      type: object
+      properties:
+        movie_genres:
+          type: array
+          items:
+            $ref: "#/components/schemas/Genre"
+        tv_genres:
+          type: array
+          items:
+            $ref: "#/components/schemas/Genre"
+      required:
+        - movie_genres
+        - tv_genres
+
+    MediaDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        name:
+          type: string
+        overview:
+          type: string
+        poster_path:
+          type: ["string", "null"]
+        backdrop_path:
+          type: ["string", "null"]
+        vote_average:
+          type: number
+        vote_count:
+          type: integer
+        release_date:
+          type: string
+        first_air_date:
+          type: string
+        runtime:
+          type: ["integer", "null"]
+        status:
+          type: string
+        tagline:
+          type: string
+        genres:
+          type: array
+          items:
+            $ref: "#/components/schemas/Genre"
+        number_of_seasons:
+          type: integer
+        number_of_episodes:
+          type: integer
+        seasons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Season"
+        media_type:
+          type: string
+      required:
+        - id
+
+    Season:
+      type: object
+      properties:
+        id:
+          type: integer
+        season_number:
+          type: integer
+        name:
+          type: string
+        episode_count:
+          type: integer
+        poster_path:
+          type: ["string", "null"]
+        air_date:
+          type: string
+      required:
+        - id
+        - season_number
+
+    Episode:
+      type: object
+      properties:
+        id:
+          type: integer
+        episode_number:
+          type: integer
+        name:
+          type: string
+        overview:
+          type: string
+        still_path:
+          type: ["string", "null"]
+        air_date:
+          type: string
+        runtime:
+          type: ["integer", "null"]
+        vote_average:
+          type: number
+      required:
+        - id
+        - episode_number
+
+    SeasonDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+        season_number:
+          type: integer
+        name:
+          type: string
+        overview:
+          type: string
+        poster_path:
+          type: ["string", "null"]
+        air_date:
+          type: string
+        episodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Episode"
+      required:
+        - id
+        - season_number
+        - episodes
+
+    CastMember:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        character:
+          type: string
+        profile_path:
+          type: ["string", "null"]
+        order:
+          type: integer
+      required:
+        - id
+        - name
+
+    Credits:
+      type: object
+      properties:
+        cast:
+          type: array
+          items:
+            $ref: "#/components/schemas/CastMember"
+        crew:
+          type: array
+          items:
+            $ref: "#/components/schemas/CastMember"
+      required:
+        - cast
+        - crew

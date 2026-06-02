@@ -1,36 +1,50 @@
-# [Project name]
+# CineMate
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full movie and TV streaming discovery site — search any title, get TMDB details, and watch via embedded VidKing player.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
+- `pnpm --filter @workspace/cinemate run dev` — run the frontend (port auto-assigned)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `TMDB_API_KEY` — TMDB API key for movie data
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- Frontend: React + Vite + Tailwind + Framer Motion + Wouter
+- API: Express 5 (no DB — all data is live from TMDB)
+- Validation: Zod (`zod/v4`)
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- Player: VidKing embed (iframe)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — API contract (source of truth)
+- `lib/api-client-react/src/generated/` — generated React Query hooks
+- `lib/api-zod/src/generated/` — generated Zod schemas
+- `artifacts/api-server/src/routes/movies.ts` — search/trending/popular/genres endpoints
+- `artifacts/api-server/src/routes/media.ts` — details/similar/credits/seasons endpoints
+- `artifacts/cinemate/src/` — React frontend
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- No database — all content is fetched live from TMDB and cached by React Query
+- TMDB API key is kept server-side only (never exposed to frontend)
+- VidKing embed uses path `/embed/movie/{id}` for movies and `/embed/tv/{id}/{season}/{episode}` for TV
+- OpenAPI path params use `mediaType` in path (not query) to avoid Orval TS2308 collisions
+- All media type endpoints use `/media/{mediaType}/{mediaId}` pattern for type safety
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Home: trending hero, popular movies/TV rows, top-rated
+- Search: real-time search across movies and TV shows
+- Movie detail: full info + VidKing player embed + cast + similar
+- TV detail: season/episode selector + VidKing player + cast + similar
+- Genre browsing
 
 ## User preferences
 
@@ -38,7 +52,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run codegen after any spec change: `pnpm --filter @workspace/api-spec run codegen`
+- Path params on endpoints with shared query param names (like `type`) cause Orval TS2308 — use distinct path params instead (e.g. `/media/{mediaType}/{mediaId}`)
+- VidKing embed only shows after user clicks "Watch Now" — not autoplay
 
 ## Pointers
 
