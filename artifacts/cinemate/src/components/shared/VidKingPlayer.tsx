@@ -36,6 +36,13 @@ const SOURCES = [
         ? `https://ezvidapi.com/embed/movie/${id}`
         : `https://ezvidapi.com/embed/tv/${id}/${s}/${e}`,
   },
+  {
+    name: "SuperEmbed",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
+      type === "movie"
+        ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
+        : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
+  },
 ];
 
 export function VidKingPlayer({ mediaType, tmdbId, seasonNumber, episodeNumber }: VidKingPlayerProps) {
