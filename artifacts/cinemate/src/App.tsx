@@ -10,6 +10,7 @@ import { Search } from "@/pages/Search";
 import { Movie } from "@/pages/Movie";
 import { Tv } from "@/pages/Tv";
 import { Genre } from "@/pages/Genre";
+import { MyList } from "@/pages/MyList";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -30,6 +31,7 @@ function Router() {
         <Route path="/movie/:id" component={Movie} />
         <Route path="/tv/:id" component={Tv} />
         <Route path="/genre/:id" component={Genre} />
+        <Route path="/mylist" component={MyList} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

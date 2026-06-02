@@ -11,15 +11,19 @@ import { getTmdbImageUrl } from "@/lib/tmdb";
 import { VidKingPlayer } from "@/components/shared/VidKingPlayer";
 import { MediaRow } from "@/components/shared/MediaRow";
 import { Button } from "@/components/ui/button";
-import { Play, Star, Clock, Calendar } from "lucide-react";
+import { Play, Star, Clock, Calendar, Bookmark, BookmarkCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useContinueWatching } from "@/hooks/use-continue-watching";
+import { useWatchlist } from "@/hooks/use-watchlist";
 
 export function Movie() {
   const params = useParams();
   const id = Number(params.id);
   const [showPlayer, setShowPlayer] = useState(false);
+  const { track } = useContinueWatching();
+  const { toggle, isInList } = useWatchlist();
 
   useEffect(() => {
     setShowPlayer(false);
@@ -109,15 +113,44 @@ export function Movie() {
               {movie.overview}
             </p>
 
-            {!showPlayer && (
-              <Button 
-                size="lg" 
-                className="text-lg px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 mb-12"
-                onClick={() => setShowPlayer(true)}
-              >
-                <Play className="w-5 h-5 fill-current" /> Watch Movie
-              </Button>
-            )}
+            <div className="flex items-center gap-4 mb-12">
+              {!showPlayer && (
+                <Button
+                  size="lg"
+                  className="text-lg px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => {
+                    setShowPlayer(true);
+                    if (movie) {
+                      track({
+                        id: movie.id,
+                        title: movie.title || movie.name || "",
+                        poster_path: movie.poster_path ?? null,
+                        backdrop_path: movie.backdrop_path ?? null,
+                        media_type: "movie",
+                      });
+                    }
+                  }}
+                >
+                  <Play className="w-5 h-5 fill-current" /> Watch Movie
+                </Button>
+              )}
+              {movie && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className={`text-lg px-8 gap-2 border-white/20 backdrop-blur-sm ${
+                    isInList(movie.id)
+                      ? "bg-primary/20 text-primary border-primary/50"
+                      : "bg-black/40 text-white hover:bg-white/20"
+                  }`}
+                  onClick={() => toggle({ id: movie.id, title: movie.title, poster_path: movie.poster_path, backdrop_path: movie.backdrop_path, media_type: "movie" })}
+                >
+                  {isInList(movie.id)
+                    ? <><BookmarkCheck className="w-5 h-5" /> Saved</>
+                    : <><Bookmark className="w-5 h-5" /> My List</>}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 

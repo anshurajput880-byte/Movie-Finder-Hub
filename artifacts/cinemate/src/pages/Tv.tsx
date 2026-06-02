@@ -14,16 +14,20 @@ import { VidKingPlayer } from "@/components/shared/VidKingPlayer";
 import { MediaRow } from "@/components/shared/MediaRow";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Play, Star, Calendar } from "lucide-react";
+import { Play, Star, Calendar, Bookmark, BookmarkCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useContinueWatching } from "@/hooks/use-continue-watching";
+import { useWatchlist } from "@/hooks/use-watchlist";
 
 export function Tv() {
   const params = useParams();
   const id = Number(params.id);
   const [selectedSeason, setSelectedSeason] = useState<number>(1);
   const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
+  const { track } = useContinueWatching();
+  const { toggle, isInList } = useWatchlist();
 
   useEffect(() => {
     setSelectedSeason(1);
@@ -115,16 +119,33 @@ export function Tv() {
             <p className="text-base md:text-lg text-white/80 leading-relaxed mb-8 max-w-3xl">
               {tv.overview}
             </p>
+
+            <div className="flex items-center gap-4 mb-8">
+              <Button
+                size="lg"
+                variant="outline"
+                className={`text-lg px-8 gap-2 border-white/20 backdrop-blur-sm ${
+                  isInList(tv.id)
+                    ? "bg-primary/20 text-primary border-primary/50"
+                    : "bg-black/40 text-white hover:bg-white/20"
+                }`}
+                onClick={() => toggle({ id: tv.id, name: tv.name, poster_path: tv.poster_path, backdrop_path: tv.backdrop_path, media_type: "tv" })}
+              >
+                {isInList(tv.id)
+                  ? <><BookmarkCheck className="w-5 h-5" /> Saved</>
+                  : <><Bookmark className="w-5 h-5" /> My List</>}
+              </Button>
+            </div>
           </div>
         </div>
 
         {selectedEpisode && (
           <div className="mt-12 mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <VidKingPlayer 
-              mediaType="tv" 
-              tmdbId={tv.id} 
-              seasonNumber={selectedSeason} 
-              episodeNumber={selectedEpisode} 
+            <VidKingPlayer
+              mediaType="tv"
+              tmdbId={tv.id}
+              seasonNumber={selectedSeason}
+              episodeNumber={selectedEpisode}
             />
           </div>
         )}
@@ -166,7 +187,22 @@ export function Tv() {
               {seasonDetails?.episodes?.map(ep => (
                 <button
                   key={ep.id}
-                  onClick={() => setSelectedEpisode(ep.episode_number)}
+                  onClick={() => {
+                    setSelectedEpisode(ep.episode_number);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                    if (tv) {
+                      track({
+                        id: tv.id,
+                        title: tv.name || "",
+                        poster_path: tv.poster_path ?? null,
+                        backdrop_path: tv.backdrop_path ?? null,
+                        media_type: "tv",
+                        season: selectedSeason,
+                        episode: ep.episode_number,
+                        episode_name: ep.name,
+                      });
+                    }
+                  }}
                   className={cn(
                     "flex gap-4 p-3 rounded-xl text-left transition-colors",
                     selectedEpisode === ep.episode_number 
