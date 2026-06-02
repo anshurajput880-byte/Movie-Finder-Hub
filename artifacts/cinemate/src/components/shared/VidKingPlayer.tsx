@@ -8,18 +8,41 @@ interface VidKingPlayerProps {
 }
 
 const SOURCES = [
-  { name: "Server 1", getUrl: (type: string, id: number, s?: number, e?: number) =>
+  {
+    name: "VidSrc Pro",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
-        ? `https://vidking.net/embed/movie/${id}`
-        : `https://vidking.net/embed/tv/${id}/${s}/${e}` },
-  { name: "Server 2", getUrl: (type: string, id: number, s?: number, e?: number) =>
+        ? `https://vidsrc.pro/embed/movie/${id}`
+        : `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`,
+  },
+  {
+    name: "Videasy",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
-        ? `https://vidsrc.to/embed/movie/${id}`
-        : `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-  { name: "Server 3", getUrl: (type: string, id: number, s?: number, e?: number) =>
+        ? `https://player.videasy.net/movie/${id}`
+        : `https://player.videasy.net/tv/${id}?season=${s}&episode=${e}`,
+  },
+  {
+    name: "EzVidAPI",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
-        ? `https://2embed.cc/embed/movie/${id}`
-        : `https://2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+        ? `https://ezvidapi.com/embed/movie/${id}`
+        : `https://ezvidapi.com/embed/tv/${id}/${s}/${e}`,
+  },
+  {
+    name: "SuperEmbed",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
+      type === "movie"
+        ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
+        : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
+  },
+  {
+    name: "VidSrc Dev",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
+      type === "movie"
+        ? `https://vidsrc.dev/embed/movie/${id}`
+        : `https://vidsrc.dev/embed/tv/${id}?season=${s}&episode=${e}`,
+  },
 ];
 
 export function VidKingPlayer({ mediaType, tmdbId, seasonNumber, episodeNumber }: VidKingPlayerProps) {
@@ -29,7 +52,7 @@ export function VidKingPlayer({ mediaType, tmdbId, seasonNumber, episodeNumber }
 
   return (
     <div className="w-full space-y-2">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 items-center">
         {SOURCES.map((source, i) => (
           <button
             key={source.name}
@@ -43,7 +66,7 @@ export function VidKingPlayer({ mediaType, tmdbId, seasonNumber, episodeNumber }
             {source.name}
           </button>
         ))}
-        <span className="ml-auto text-xs text-white/30 self-center">If one doesn't work, try another</span>
+        <span className="text-xs text-white/30 ml-auto">Switch server if video doesn't load</span>
       </div>
       <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
         <iframe
