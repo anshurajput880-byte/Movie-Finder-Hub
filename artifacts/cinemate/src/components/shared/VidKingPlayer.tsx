@@ -16,13 +16,6 @@ const SOURCES = [
         : `https://vidking.net/embed/tv/${id}/${s}/${e}`,
   },
   {
-    name: "VidSrc Pro",
-    getUrl: (type: string, id: number, s?: number, e?: number) =>
-      type === "movie"
-        ? `https://vidsrc.pro/embed/movie/${id}`
-        : `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`,
-  },
-  {
     name: "Videasy",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
