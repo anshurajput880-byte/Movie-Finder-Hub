@@ -1,8 +1,5 @@
-[build]
-builder = "nixpacks"
-
 [deploy]
-startCommand = "pnpm --filter @workspace/cinemate serve"
-healthcheckPath = "/"
+startCommand = "node --enable-source-maps artifacts/api-server/dist/index.mjs"
+healthcheckPath = "/api/healthz"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
