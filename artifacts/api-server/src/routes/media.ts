@@ -82,6 +82,30 @@ router.get("/media/:mediaType/:mediaId/credits", async (req, res) => {
   }
 });
 
+router.get("/media/:mediaType/:mediaId/videos", async (req, res) => {
+  const { mediaType, mediaId } = req.params;
+  if (mediaType !== "movie" && mediaType !== "tv") {
+    res.status(400).json({ error: "mediaType must be movie or tv" });
+    return;
+  }
+  const id = Number(mediaId);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "mediaId must be a number" });
+    return;
+  }
+
+  try {
+    const data = await tmdb(`/${mediaType}/${id}/videos`);
+    const filtered = (data.results || []).filter(
+      (v: { site: string; type: string }) => v.site === "YouTube"
+    );
+    res.json({ results: filtered });
+  } catch (err) {
+    req.log.error({ err }, "TMDB videos error");
+    res.status(500).json({ error: "Failed to fetch videos" });
+  }
+});
+
 router.get("/media/tv/:mediaId/seasons/:seasonNumber", async (req, res) => {
   const { mediaId, seasonNumber } = req.params;
   const id = Number(mediaId);

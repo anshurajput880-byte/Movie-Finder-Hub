@@ -14,8 +14,9 @@ import { VidKingPlayer } from "@/components/shared/VidKingPlayer";
 import { MediaRow } from "@/components/shared/MediaRow";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Play, Star, Calendar, Bookmark, BookmarkCheck } from "lucide-react";
+import { Play, Star, Calendar, Bookmark, BookmarkCheck, Youtube } from "lucide-react";
 import { useState, useEffect } from "react";
+import { TrailerModal } from "@/components/shared/TrailerModal";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useContinueWatching } from "@/hooks/use-continue-watching";
@@ -26,6 +27,7 @@ export function Tv() {
   const id = Number(params.id);
   const [selectedSeason, setSelectedSeason] = useState<number>(1);
   const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
+  const [showTrailer, setShowTrailer] = useState(false);
   const { track } = useContinueWatching();
   const { toggle, isInList } = useWatchlist();
 
@@ -60,6 +62,14 @@ export function Tv() {
 
   return (
     <div className="pb-20">
+      {showTrailer && (
+        <TrailerModal
+          mediaType="tv"
+          tmdbId={tv.id}
+          title={tv.name || ""}
+          onClose={() => setShowTrailer(false)}
+        />
+      )}
       {/* Backdrop */}
       <div className="relative w-full h-[60vh] md:h-[70vh] bg-black">
         <div className="absolute inset-0">
@@ -120,7 +130,15 @@ export function Tv() {
               {tv.overview}
             </p>
 
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 gap-2 bg-black/40 border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300 backdrop-blur-sm"
+                onClick={() => setShowTrailer(true)}
+              >
+                <Youtube className="w-5 h-5" /> Trailer
+              </Button>
               <Button
                 size="lg"
                 variant="outline"

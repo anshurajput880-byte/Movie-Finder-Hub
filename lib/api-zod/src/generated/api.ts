@@ -289,6 +289,58 @@ export const GetMediaCreditsResponse = zod.object({
 
 
 /**
+ * @summary Get movies now playing in theatres
+ */
+export const getNowPlayingQueryPageDefault = 1;
+
+export const GetNowPlayingQueryParams = zod.object({
+  "page": zod.coerce.number().default(getNowPlayingQueryPageDefault)
+})
+
+export const GetNowPlayingResponse = zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.number(),
+  "title": zod.string().optional(),
+  "name": zod.string().optional(),
+  "overview": zod.string().optional(),
+  "poster_path": zod.string().nullish(),
+  "backdrop_path": zod.string().nullish(),
+  "vote_average": zod.number().optional(),
+  "vote_count": zod.number().optional(),
+  "release_date": zod.string().optional(),
+  "first_air_date": zod.string().optional(),
+  "media_type": zod.string().optional(),
+  "genre_ids": zod.array(zod.number()).optional(),
+  "popularity": zod.number().optional()
+})),
+  "total_results": zod.number(),
+  "total_pages": zod.number(),
+  "page": zod.number()
+})
+
+
+/**
+ * @summary Get trailers and videos for a movie or TV show
+ */
+export const GetMediaVideosParams = zod.object({
+  "mediaType": zod.enum(['movie', 'tv']),
+  "mediaId": zod.coerce.number()
+})
+
+export const GetMediaVideosResponse = zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "key": zod.string(),
+  "name": zod.string(),
+  "site": zod.string(),
+  "type": zod.string(),
+  "official": zod.boolean().optional(),
+  "published_at": zod.string().optional()
+}))
+})
+
+
+/**
  * @summary Get TV season details and episodes
  */
 export const GetSeasonDetailsParams = zod.object({

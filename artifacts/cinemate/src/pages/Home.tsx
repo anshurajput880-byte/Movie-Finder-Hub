@@ -3,18 +3,20 @@ import {
   useGetPopular,
   useGetPopularTv,
   useGetTopRated,
+  useGetNowPlaying,
   GetTrendingMediaType,
   GetTrendingTimeWindow
 } from "@workspace/api-client-react";
 import { MediaRow } from "@/components/shared/MediaRow";
 import { ContinueWatchingRow } from "@/components/shared/ContinueWatchingRow";
 import { getTmdbImageUrl } from "@/lib/tmdb";
-import { Link } from "wouter";
-import { Play, Info } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { Play, Info, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MediaCard } from "@/components/shared/MediaCard";
 
 export function Home() {
+  const [, setLocation] = useLocation();
   const { data: trending, isLoading: isLoadingTrending } = useGetTrending({
     mediaType: GetTrendingMediaType.all,
     timeWindow: GetTrendingTimeWindow.day
@@ -23,9 +25,17 @@ export function Home() {
   const { data: popularMovies, isLoading: isLoadingPopularMovies } = useGetPopular();
   const { data: popularTv, isLoading: isLoadingPopularTv } = useGetPopularTv();
   const { data: topRated, isLoading: isLoadingTopRated } = useGetTopRated();
+  const { data: nowPlaying, isLoading: isLoadingNowPlaying } = useGetNowPlaying();
 
   const heroItem = trending?.results?.[0];
   const top10 = trending?.results?.slice(0, 10) || [];
+
+  function handleSurpriseMe() {
+    const pool = trending?.results;
+    if (!pool || pool.length === 0) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    setLocation(`/${pick.media_type || "movie"}/${pick.id}`);
+  }
 
   return (
     <div className="pb-20">
@@ -52,7 +62,7 @@ export function Home() {
               <p className="text-base md:text-lg text-white/80 line-clamp-3 mb-8 max-w-2xl">
                 {heroItem.overview}
               </p>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3">
                 <Link href={`/${heroItem.media_type || "movie"}/${heroItem.id}`}>
                   <Button size="lg" className="text-lg px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
                     <Play className="w-5 h-5 fill-current" /> Watch Now
@@ -63,6 +73,14 @@ export function Home() {
                     <Info className="w-5 h-5" /> More Info
                   </Button>
                 </Link>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 gap-2 bg-black/40 border-white/10 text-white/70 hover:text-white hover:bg-white/10 backdrop-blur-sm"
+                  onClick={handleSurpriseMe}
+                >
+                  <Shuffle className="w-5 h-5" /> Surprise Me
+                </Button>
               </div>
             </div>
           </>
@@ -88,6 +106,9 @@ export function Home() {
                 ))}
           </div>
         </div>
+
+        {/* Now Playing in Cinemas */}
+        <MediaRow title="🎬 Now Playing in Theatres" items={nowPlaying?.results} isLoading={isLoadingNowPlaying} />
 
         <MediaRow title="Trending Today" items={trending?.results?.slice(1)} isLoading={isLoadingTrending} />
         <MediaRow title="Popular Movies" items={popularMovies?.results} isLoading={isLoadingPopularMovies} />

@@ -18,6 +18,7 @@ import type {
 import type {
   Credits,
   GenreList,
+  GetNowPlayingParams,
   GetPopularParams,
   GetPopularTvParams,
   GetTopRatedParams,
@@ -26,7 +27,8 @@ import type {
   MediaDetails,
   SearchMoviesParams,
   SearchResults,
-  SeasonDetails
+  SeasonDetails,
+  Videos
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -850,6 +852,172 @@ export function useGetMediaCredits<TData = Awaited<ReturnType<typeof getMediaCre
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetMediaCreditsQueryOptions(mediaType,mediaId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetNowPlayingUrl = (params?: GetNowPlayingParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/movies/now-playing?${stringifiedParams}` : `/api/movies/now-playing`
+}
+
+/**
+ * @summary Get movies now playing in theatres
+ */
+export const getNowPlaying = async (params?: GetNowPlayingParams, options?: RequestInit): Promise<SearchResults> => {
+
+  return customFetch<SearchResults>(getGetNowPlayingUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetNowPlayingQueryKey = (params?: GetNowPlayingParams,) => {
+    return [
+    `/api/movies/now-playing`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetNowPlayingQueryOptions = <TData = Awaited<ReturnType<typeof getNowPlaying>>, TError = ErrorType<unknown>>(params?: GetNowPlayingParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getNowPlaying>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNowPlayingQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNowPlaying>>> = ({ signal }) => getNowPlaying(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNowPlaying>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetNowPlayingQueryResult = NonNullable<Awaited<ReturnType<typeof getNowPlaying>>>
+export type GetNowPlayingQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get movies now playing in theatres
+ */
+
+export function useGetNowPlaying<TData = Awaited<ReturnType<typeof getNowPlaying>>, TError = ErrorType<unknown>>(
+ params?: GetNowPlayingParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getNowPlaying>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetNowPlayingQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetMediaVideosUrl = (mediaType: 'movie' | 'tv',
+    mediaId: number,) => {
+
+
+
+
+  return `/api/media/${mediaType}/${mediaId}/videos`
+}
+
+/**
+ * @summary Get trailers and videos for a movie or TV show
+ */
+export const getMediaVideos = async (mediaType: 'movie' | 'tv',
+    mediaId: number, options?: RequestInit): Promise<Videos> => {
+
+  return customFetch<Videos>(getGetMediaVideosUrl(mediaType,mediaId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMediaVideosQueryKey = (mediaType: 'movie' | 'tv',
+    mediaId: number,) => {
+    return [
+    `/api/media/${mediaType}/${mediaId}/videos`
+    ] as const;
+    }
+
+
+export const getGetMediaVideosQueryOptions = <TData = Awaited<ReturnType<typeof getMediaVideos>>, TError = ErrorType<unknown>>(mediaType: 'movie' | 'tv',
+    mediaId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMediaVideos>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMediaVideosQueryKey(mediaType,mediaId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMediaVideos>>> = ({ signal }) => getMediaVideos(mediaType,mediaId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(mediaType && mediaId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMediaVideos>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMediaVideosQueryResult = NonNullable<Awaited<ReturnType<typeof getMediaVideos>>>
+export type GetMediaVideosQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get trailers and videos for a movie or TV show
+ */
+
+export function useGetMediaVideos<TData = Awaited<ReturnType<typeof getMediaVideos>>, TError = ErrorType<unknown>>(
+ mediaType: 'movie' | 'tv',
+    mediaId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMediaVideos>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMediaVideosQueryOptions(mediaType,mediaId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { SearchMoviesQueryParams, GetTrendingQueryParams, GetPopularQueryParams, GetPopularTvQueryParams, GetTopRatedQueryParams } from "@workspace/api-zod";
+import { SearchMoviesQueryParams, GetTrendingQueryParams, GetPopularQueryParams, GetPopularTvQueryParams, GetTopRatedQueryParams, GetNowPlayingQueryParams } from "@workspace/api-zod";
 
 const router = Router();
 
@@ -125,6 +125,24 @@ router.get("/movies/top-rated", async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "TMDB top rated error");
     res.status(500).json({ error: "Failed to fetch top rated" });
+  }
+});
+
+router.get("/movies/now-playing", async (req, res) => {
+  const parsed = GetNowPlayingQueryParams.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid query params" });
+    return;
+  }
+  const { page = 1 } = parsed.data;
+
+  try {
+    const data = await tmdb("/movie/now_playing", { page });
+    data.results = data.results.map((r: Record<string, unknown>) => ({ ...r, media_type: "movie" }));
+    res.json(data);
+  } catch (err) {
+    req.log.error({ err }, "TMDB now playing error");
+    res.status(500).json({ error: "Failed to fetch now playing" });
   }
 });
 

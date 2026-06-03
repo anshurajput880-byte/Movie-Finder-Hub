@@ -116,6 +116,20 @@ export interface Credits {
   crew: CastMember[];
 }
 
+export interface VideoItem {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+  official?: boolean;
+  published_at?: string;
+}
+
+export interface Videos {
+  results: VideoItem[];
+}
+
 export type SearchMoviesParams = {
 query: string;
 page?: number;
@@ -162,6 +176,10 @@ page?: number;
 };
 
 export type GetTopRatedParams = {
+page?: number;
+};
+
+export type GetNowPlayingParams = {
 page?: number;
 };
 

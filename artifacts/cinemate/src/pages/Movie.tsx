@@ -11,8 +11,9 @@ import { getTmdbImageUrl } from "@/lib/tmdb";
 import { VidKingPlayer } from "@/components/shared/VidKingPlayer";
 import { MediaRow } from "@/components/shared/MediaRow";
 import { Button } from "@/components/ui/button";
-import { Play, Star, Clock, Calendar, Bookmark, BookmarkCheck } from "lucide-react";
+import { Play, Star, Clock, Calendar, Bookmark, BookmarkCheck, Youtube } from "lucide-react";
 import { useState, useEffect } from "react";
+import { TrailerModal } from "@/components/shared/TrailerModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useContinueWatching } from "@/hooks/use-continue-watching";
@@ -22,6 +23,7 @@ export function Movie() {
   const params = useParams();
   const id = Number(params.id);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [showTrailer, setShowTrailer] = useState(false);
   const { track } = useContinueWatching();
   const { toggle, isInList } = useWatchlist();
 
@@ -51,6 +53,14 @@ export function Movie() {
 
   return (
     <div className="pb-20">
+      {showTrailer && movie && (
+        <TrailerModal
+          mediaType="movie"
+          tmdbId={movie.id}
+          title={movie.title || ""}
+          onClose={() => setShowTrailer(false)}
+        />
+      )}
       {/* Backdrop */}
       <div className="relative w-full h-[60vh] md:h-[70vh] bg-black">
         <div className="absolute inset-0">
@@ -113,7 +123,7 @@ export function Movie() {
               {movie.overview}
             </p>
 
-            <div className="flex items-center gap-4 mb-12">
+            <div className="flex flex-wrap items-center gap-3 mb-12">
               {!showPlayer && (
                 <Button
                   size="lg"
@@ -134,6 +144,14 @@ export function Movie() {
                   <Play className="w-5 h-5 fill-current" /> Watch Movie
                 </Button>
               )}
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 gap-2 bg-black/40 border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300 backdrop-blur-sm"
+                onClick={() => setShowTrailer(true)}
+              >
+                <Youtube className="w-5 h-5" /> Trailer
+              </Button>
               {movie && (
                 <Button
                   size="lg"

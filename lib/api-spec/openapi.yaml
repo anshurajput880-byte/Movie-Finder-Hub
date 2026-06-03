@@ -235,6 +235,51 @@ paths:
               schema:
                 $ref: "#/components/schemas/Credits"
 
+  /movies/now-playing:
+    get:
+      operationId: getNowPlaying
+      tags: [movies]
+      summary: Get movies now playing in theatres
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Now playing movies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /media/{mediaType}/{mediaId}/videos:
+    get:
+      operationId: getMediaVideos
+      tags: [movies]
+      summary: Get trailers and videos for a movie or TV show
+      parameters:
+        - name: mediaType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [movie, tv]
+        - name: mediaId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Video results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Videos"
+
   /media/tv/{mediaId}/seasons/{seasonNumber}:
     get:
       operationId: getSeasonDetails
@@ -491,3 +536,37 @@ components:
       required:
         - cast
         - crew
+
+    VideoItem:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        site:
+          type: string
+        type:
+          type: string
+        official:
+          type: boolean
+        published_at:
+          type: string
+      required:
+        - id
+        - key
+        - name
+        - site
+        - type
+
+    Videos:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/VideoItem"
+      required:
+        - results
