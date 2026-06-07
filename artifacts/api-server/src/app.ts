@@ -34,7 +34,11 @@ app.use("/api", router);
 
 // In production (Railway), serve the built Vite frontend
 if (process.env.NODE_ENV === "production") {
-  const frontendDist = path.resolve(process.cwd(), "artifacts/cinemate/dist/public");
+  // Use import.meta.url so the path is always relative to the built bundle
+  // (dist/index.mjs → ../../.. → repo root → artifacts/cinemate/dist/public)
+  const bundleDir = path.dirname(new URL(import.meta.url).pathname);
+  const frontendDist = path.resolve(bundleDir, "../../../artifacts/cinemate/dist/public");
+  logger.info({ frontendDist }, "Serving static frontend from");
   app.use(express.static(frontendDist));
   // All non-API routes serve index.html so client-side routing works
   app.get("*", (_req, res) => {
