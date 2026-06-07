@@ -7,10 +7,7 @@ cmds = [
 ]
 
 [phases.build]
-cmds = [
-  "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/cinemate run build",
-  "pnpm --filter @workspace/api-server run build"
-]
+cmds = ["pnpm run railway:build"]
 
 [start]
 cmd = "node --enable-source-maps artifacts/api-server/dist/index.mjs"
