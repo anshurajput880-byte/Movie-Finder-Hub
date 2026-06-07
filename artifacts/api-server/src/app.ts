@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === "production") {
   logger.info({ frontendDist }, "Serving static frontend from");
   app.use(express.static(frontendDist));
   // All non-API routes serve index.html so client-side routing works
-  app.get("*", (_req, res) => {
+  app.get("/*path", (_req, res) => {
     res.sendFile(path.join(frontendDist, "index.html"));
   });
 }
