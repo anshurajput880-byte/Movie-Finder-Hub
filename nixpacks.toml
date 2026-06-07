@@ -7,7 +7,10 @@ cmds = [
 ]
 
 [phases.build]
-cmds = ["pnpm run railway:build"]
+cmds = [
+  "pnpm run railway:build"
+]
+only_include_files = ["."]
 
 [start]
 cmd = "node --enable-source-maps artifacts/api-server/dist/index.mjs"
