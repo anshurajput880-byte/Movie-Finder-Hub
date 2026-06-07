@@ -9,21 +9,28 @@ interface VidKingPlayerProps {
 
 const SOURCES = [
   {
-    name: "VidKing",
+    name: "Server 1",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
-        ? `https://vidking.net/embed/movie/${id}`
-        : `https://vidking.net/embed/tv/${id}/${s}/${e}`,
+        ? `https://vidsrc.to/embed/movie/${id}`
+        : `https://vidsrc.to/embed/tv/${id}/${s}/${e}`,
   },
   {
-    name: "Videasy",
+    name: "Server 2",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
         ? `https://player.videasy.net/movie/${id}`
         : `https://player.videasy.net/tv/${id}?season=${s}&episode=${e}`,
   },
   {
-    name: "EzVidAPI",
+    name: "Server 3",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
+      type === "movie"
+        ? `https://vidsrc.me/embed/movie?tmdb=${id}`
+        : `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,
+  },
+  {
+    name: "Server 4",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
         ? `https://ezvidapi.com/embed/movie/${id}`
@@ -60,8 +67,8 @@ export function VidKingPlayer({ mediaType, tmdbId, seasonNumber, episodeNumber }
           src={url}
           className="absolute inset-0 w-full h-full border-0"
           allowFullScreen
-          allow="autoplay; encrypted-media; fullscreen"
-          referrerPolicy="origin"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+          referrerPolicy="no-referrer"
         />
       </div>
     </div>
