@@ -9,28 +9,35 @@ interface VidKingPlayerProps {
 
 const SOURCES = [
   {
-    name: "Server 1",
+    name: "VidKing",
+    getUrl: (type: string, id: number, s?: number, e?: number) =>
+      type === "movie"
+        ? `https://vidking.net/embed/movie/${id}`
+        : `https://vidking.net/embed/tv/${id}/${s}/${e}`,
+  },
+  {
+    name: "Server 2",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
         ? `https://vidsrc.to/embed/movie/${id}`
         : `https://vidsrc.to/embed/tv/${id}/${s}/${e}`,
   },
   {
-    name: "Server 2",
+    name: "Server 3",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
         ? `https://player.videasy.net/movie/${id}`
         : `https://player.videasy.net/tv/${id}?season=${s}&episode=${e}`,
   },
   {
-    name: "Server 3",
+    name: "Server 4",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
         ? `https://vidsrc.me/embed/movie?tmdb=${id}`
         : `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,
   },
   {
-    name: "Server 4",
+    name: "Server 5",
     getUrl: (type: string, id: number, s?: number, e?: number) =>
       type === "movie"
         ? `https://ezvidapi.com/embed/movie/${id}`
